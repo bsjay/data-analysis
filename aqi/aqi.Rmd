@@ -140,15 +140,36 @@ ggplot(avg_city_aqi, aes(城市AQI平均值)) +
 > *有2个城市的AQI指数在495-525之间，等级为重度污染，占比为0.5%。*
 
 ### 4. 查看AQI平均值最低和最高的10个城市
-- AQI平均值最低的10个城市
+- 城市AQI平均值最低的10个城市
 ```{r avg_city_aqi 10 highest}
-head(arrange(avg_city_aqi, 城市AQI平均值), 10) # 正序排列
+avg_city_aqi %>% 
+  arrange(城市AQI平均值) %>%  # 按从小到大升序排列
+  head(10) %>%  # 输出AQI平均值最低的10个城市
+  # 绘制条形图
+  ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(title = "城市AQI平均值最低的10个城市", x="城市", y="城市AQI平均值") +
+  theme(plot.title = element_text(hjust = 0.5),
+        text = element_text(family = "MicrosoftYaHei")) +
+  geom_text(aes(label=城市AQI平均值), hjust=-0.2) +
+  coord_flip()
 ```
 
-- AQI平均值最高的10个城市
+- 城市AQI平均值最高的10个城市
 ```{r avg_city_aqi 10 lowest}
-head(arrange(avg_city_aqi, desc(城市AQI平均值)), 10) # 倒序排列
+avg_city_aqi %>% 
+  arrange(desc(城市AQI平均值)) %>%  # 按从大到小降序排列
+  head(10) %>%  # 输出AQI平均值最高的10个城市
+  # 绘制条形图
+  ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(title = "城市AQI平均值最高的10个城市", x="城市", y="城市AQI平均值") +
+  theme(plot.title = element_text(hjust = 0.5),
+        text = element_text(family = "MicrosoftYaHei")) +
+  geom_text(aes(label=城市AQI平均值), hjust=-0.1) +
+  coord_flip()
 ```
+
 
 
 
