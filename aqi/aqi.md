@@ -205,7 +205,7 @@ avg_city_aqi
     ## 10 鞍山                 177
     ## # … with 355 more rows
 
-  - 查看城市AQI平均值的描述统计量
+  - 统计城市AQI平均值的描述统计量
 
 <!-- end list -->
 
