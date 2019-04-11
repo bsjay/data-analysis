@@ -133,7 +133,11 @@ describeBy(aqi)
 
 ## 5.2 单因子探索性数据分析
 
-### 1\. 统计城市数量
+### 1\. 分析城市变量
+
+  - 统计城市数量
+
+<!-- end list -->
 
 ``` r
 summary(aqi %>% 
@@ -151,7 +155,11 @@ summary(aqi %>%
 
 > *数据集总共有365个城市。*
 
-### 2\. 统计地区数量
+### 2\. 分析地区变量
+
+  - 统计地区数量
+
+<!-- end list -->
 
 ``` r
 summary(aqi %>% 
@@ -169,7 +177,7 @@ summary(aqi %>%
 
 > *收集空气数据的地区有1264个。整个数据集有1453个观测，可以看出其中有些城市的数据收集地区有重复，重复数量有189个。*
 
-### 3\. 统计城市AQI平均值
+### 3\. 分析城市AQI变量
 
   - 按城市分组，计算各城市的AQI平均值
 
@@ -179,7 +187,23 @@ summary(aqi %>%
 avg_city_aqi <- aqi %>% 
   group_by(城市) %>% 
   summarise(城市AQI平均值 = mean(城市AQI))
+avg_city_aqi
 ```
+
+    ## # A tibble: 365 x 2
+    ##    城市       城市AQI平均值
+    ##    <chr>              <dbl>
+    ##  1 阿坝州                29
+    ##  2 阿克苏地区           500
+    ##  3 阿拉善盟              42
+    ##  4 阿勒泰地区            49
+    ##  5 阿里地区              28
+    ##  6 安康                  88
+    ##  7 安庆                 150
+    ##  8 安顺                  41
+    ##  9 安阳                 100
+    ## 10 鞍山                 177
+    ## # … with 355 more rows
 
   - 查看城市AQI平均值的描述统计量
 
@@ -235,7 +259,7 @@ ggplot(avg_city_aqi, aes(城市AQI平均值)) +
 
 ![](aqi_files/figure-gfm/avg_city_aqi%20histogram-1.png)<!-- -->
 
-> *有49城市的AQI指数在15-45之间，等级为优，占比为13.4%；*
+> *有个49城市的AQI指数在15-45之间，等级为优，占比为13.4%；*
 
 > *有232个城市的AQI指数在45-105之间，等级为良，占比为63.6%；*
 
@@ -245,51 +269,45 @@ ggplot(avg_city_aqi, aes(城市AQI平均值)) +
 
 > *有2个城市的AQI指数在495-525之间，等级为重度污染，占比为0.5%。*
 
-### 4\. 查看AQI平均值最低和最高的10个城市
-
-  - AQI平均值最低的10个城市
+  - 城市AQI平均值最低的10个城市
 
 <!-- end list -->
 
 ``` r
-head(arrange(avg_city_aqi, 城市AQI平均值), 10) # 正序排列
+avg_city_aqi %>% 
+  arrange(城市AQI平均值) %>%  # 按从小到大升序排列
+  head(10) %>%  # 输出AQI平均值最低的10个城市
+  # 绘制条形图
+  ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
+  geom_bar(stat = "identity", fill = "green") +
+  labs(title = "城市AQI平均值最低的10个城市", x="城市", y="城市AQI平均值") +
+  theme(plot.title = element_text(hjust = 0.5),
+        text = element_text(family = "MicrosoftYaHei")) +
+  geom_text(aes(label=城市AQI平均值), hjust=-0.2) +
+  coord_flip()
 ```
 
-    ## # A tibble: 10 x 2
-    ##    城市         城市AQI平均值
-    ##    <chr>                <dbl>
-    ##  1 迪庆州                  26
-    ##  2 朝阳                    27
-    ##  3 阿里地区                28
-    ##  4 贺州                    28
-    ##  5 阿坝州                  29
-    ##  6 赤峰                    29
-    ##  7 日喀则地区              29
-    ##  8 锡林郭勒盟              29
-    ##  9 伊犁哈萨克州            29
-    ## 10 昌都地区                30
+![](aqi_files/figure-gfm/avg_city_aqi%2010%20highest-1.png)<!-- -->
 
-  - AQI平均值最高的10个城市
+  - 城市AQI平均值最高的10个城市
 
 <!-- end list -->
 
 ``` r
-head(arrange(avg_city_aqi, desc(城市AQI平均值)), 10) # 倒序排列
+avg_city_aqi %>% 
+  arrange(desc(城市AQI平均值)) %>%  # 按从大到小降序排列
+  head(10) %>%  # 输出AQI平均值最高的10个城市
+  # 绘制条形图
+  ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
+  geom_bar(stat = "identity", fill = "red") +
+  labs(title = "城市AQI平均值最高的10个城市", x="城市", y="城市AQI平均值") +
+  theme(plot.title = element_text(hjust = 0.5),
+        text = element_text(family = "MicrosoftYaHei")) +
+  geom_text(aes(label=城市AQI平均值), hjust=-0.1) +
+  coord_flip()
 ```
 
-    ## # A tibble: 10 x 2
-    ##    城市       城市AQI平均值
-    ##    <chr>              <dbl>
-    ##  1 阿克苏地区           500
-    ##  2 喀什地区             500
-    ##  3 绍兴                 227
-    ##  4 宁波                 196
-    ##  5 富阳                 189
-    ##  6 和田地区             178
-    ##  7 鞍山                 177
-    ##  8 克州                 175
-    ##  9 临安                 175
-    ## 10 咸阳                 175
+![](aqi_files/figure-gfm/avg_city_aqi%2010%20lowest-1.png)<!-- -->
 
 # 参考资料
 
