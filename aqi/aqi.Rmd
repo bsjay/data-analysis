@@ -1,10 +1,10 @@
 ---
 title: "aqi"
 output: 
+  github_document: default
   html_document: 
     df_print: paged
     toc: yes
-  github_document: default
 ---
 
 # 1. 问题
@@ -84,7 +84,8 @@ describeBy(aqi)
 
 ## 5.2 单因子探索性数据分析
 
-### 1. 统计城市数量
+### 1. 分析城市变量
+- 统计城市数量
 ```{r city}
 summary(aqi %>% 
   group_by(城市) %>% 
@@ -92,7 +93,8 @@ summary(aqi %>%
 ```
 > *数据集总共有365个城市。*
 
-### 2. 统计地区数量
+### 2. 分析地区变量
+- 统计地区数量
 ```{r area}
 summary(aqi %>% 
   group_by(地区) %>% 
@@ -100,12 +102,13 @@ summary(aqi %>%
 ```
 > *收集空气数据的地区有1264个。整个数据集有1453个观测，可以看出其中有些城市的数据收集地区有重复，重复数量有189个。*
 
-### 3. 统计城市AQI平均值
+### 3. 分析城市AQI变量
 - 按城市分组，计算各城市的AQI平均值
 ```{r avg_city_aqi}
 avg_city_aqi <- aqi %>% 
   group_by(城市) %>% 
   summarise(城市AQI平均值 = mean(城市AQI))
+avg_city_aqi
 ```
 
 - 查看城市AQI平均值的描述统计量
@@ -129,7 +132,7 @@ ggplot(avg_city_aqi, aes(城市AQI平均值)) +
         text = element_text(family = "MicrosoftYaHei"))
 ```
 
-> *有49城市的AQI指数在15-45之间，等级为优，占比为13.4%；*
+> *有个49城市的AQI指数在15-45之间，等级为优，占比为13.4%；*
 
 > *有232个城市的AQI指数在45-105之间，等级为良，占比为63.6%；*
 
@@ -139,7 +142,6 @@ ggplot(avg_city_aqi, aes(城市AQI平均值)) +
 
 > *有2个城市的AQI指数在495-525之间，等级为重度污染，占比为0.5%。*
 
-### 4. 查看AQI平均值最低和最高的10个城市
 - 城市AQI平均值最低的10个城市
 ```{r avg_city_aqi 10 highest}
 avg_city_aqi %>% 
@@ -147,7 +149,7 @@ avg_city_aqi %>%
   head(10) %>%  # 输出AQI平均值最低的10个城市
   # 绘制条形图
   ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
-  geom_bar(stat = "identity", fill = "blue") +
+  geom_bar(stat = "identity", fill = "green") +
   labs(title = "城市AQI平均值最低的10个城市", x="城市", y="城市AQI平均值") +
   theme(plot.title = element_text(hjust = 0.5),
         text = element_text(family = "MicrosoftYaHei")) +
@@ -162,7 +164,7 @@ avg_city_aqi %>%
   head(10) %>%  # 输出AQI平均值最高的10个城市
   # 绘制条形图
   ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
-  geom_bar(stat = "identity", fill = "blue") +
+  geom_bar(stat = "identity", fill = "red") +
   labs(title = "城市AQI平均值最高的10个城市", x="城市", y="城市AQI平均值") +
   theme(plot.title = element_text(hjust = 0.5),
         text = element_text(family = "MicrosoftYaHei")) +
