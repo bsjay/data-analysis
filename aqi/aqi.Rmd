@@ -111,7 +111,7 @@ avg_city_aqi <- aqi %>%
 avg_city_aqi
 ```
 
-- 查看城市AQI平均值的描述统计量
+- 统计城市AQI平均值的描述统计量
 ```{r}
 summary(avg_city_aqi)
 ```
