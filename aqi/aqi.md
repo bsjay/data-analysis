@@ -25,6 +25,8 @@ aqi
 library(tidyverse) # 数据分析包
 library(readxl) # 读取excel文件
 library(psych) # 查看描述统计量
+library(Hmisc)
+library(pastecs)
 library(knitr)
 library(magrittr)
 ```
@@ -107,27 +109,39 @@ head(aqi)
 ## 5.1 查看描述统计量
 
 ``` r
-describeBy(aqi)
+stat.desc(aqi)
 ```
 
-    ##             vars    n  mean    sd median trimmed   mad min  max range skew
-    ## 城市*          1 1453   NaN    NA     NA     NaN    NA Inf -Inf  -Inf   NA
-    ## 地区*          2 1453   NaN    NA     NA     NaN    NA Inf -Inf  -Inf   NA
-    ## 城市AQI        3 1453 85.53 42.66     76   80.96 34.10  26  500   474 3.01
-    ## PM2.5          4 1453 57.84 36.87     50   54.14 31.13   1  476   475 1.96
-    ## PM10           5 1389 97.95 68.19     87   90.75 48.93   1 1135  1134 5.71
-    ## 首要污染物*    6 1196  1.79  0.89      1    1.74  0.00   1    4     3 0.46
-    ## 污染等级*      7 1453  2.16  0.70      2    2.18  0.00   1    5     4 0.16
-    ## 地区AQI        8 1453 85.90 45.21     75   80.77 34.10  11  500   489 2.73
-    ##             kurtosis   se
-    ## 城市*             NA   NA
-    ## 地区*             NA   NA
-    ## 城市AQI        23.29 1.12
-    ## PM2.5          12.69 0.97
-    ## PM10           68.01 1.83
-    ## 首要污染物*    -1.47 0.03
-    ## 污染等级*       0.08 0.02
-    ## 地区AQI        18.55 1.19
+    ##          城市 地区      城市AQI        PM2.5         PM10 首要污染物
+    ## nbr.val    NA   NA 1.453000e+03 1.453000e+03 1.389000e+03         NA
+    ## nbr.null   NA   NA 0.000000e+00 0.000000e+00 0.000000e+00         NA
+    ## nbr.na     NA   NA 0.000000e+00 0.000000e+00 6.400000e+01         NA
+    ## min        NA   NA 2.600000e+01 1.000000e+00 1.000000e+00         NA
+    ## max        NA   NA 5.000000e+02 4.760000e+02 1.135000e+03         NA
+    ## range      NA   NA 4.740000e+02 4.750000e+02 1.134000e+03         NA
+    ## sum        NA   NA 1.242730e+05 8.403500e+04 1.360510e+05         NA
+    ## median     NA   NA 7.600000e+01 5.000000e+01 8.700000e+01         NA
+    ## mean       NA   NA 8.552856e+01 5.783551e+01 9.794888e+01         NA
+    ## SE.mean    NA   NA 1.119277e+00 9.671441e-01 1.829588e+00         NA
+    ## CI.mean    NA   NA 2.195573e+00 1.897149e+00 3.589056e+00         NA
+    ## var        NA   NA 1.820291e+03 1.359089e+03 4.649527e+03         NA
+    ## std.dev    NA   NA 4.266486e+01 3.686583e+01 6.818744e+01         NA
+    ## coef.var   NA   NA 4.988376e-01 6.374255e-01 6.961533e-01         NA
+    ##          污染等级      地区AQI
+    ## nbr.val        NA 1.453000e+03
+    ## nbr.null       NA 0.000000e+00
+    ## nbr.na         NA 0.000000e+00
+    ## min            NA 1.100000e+01
+    ## max            NA 5.000000e+02
+    ## range          NA 4.890000e+02
+    ## sum            NA 1.248190e+05
+    ## median         NA 7.500000e+01
+    ## mean           NA 8.590434e+01
+    ## SE.mean        NA 1.186049e+00
+    ## CI.mean        NA 2.326552e+00
+    ## var            NA 2.043952e+03
+    ## std.dev        NA 4.521008e+01
+    ## coef.var       NA 5.262841e-01
 
 > *整个数据集有1453个观测（行），8个变量（列），这些变量分别是城市、地区、城市AQI、PM2.5、PM10、首要污染物、污染等级和地区AQI。*
 
@@ -140,9 +154,10 @@ describeBy(aqi)
 <!-- end list -->
 
 ``` r
-summary(aqi %>% 
+aqi %>% 
   group_by(城市) %>% 
-  count())
+  count() %>% 
+  summary()
 ```
 
     ##      城市                 n         
@@ -153,7 +168,7 @@ summary(aqi %>%
     ##                     3rd Qu.: 5.000  
     ##                     Max.   :17.000
 
-> *数据集总共有365个城市。*
+> *经聚合后，数据集有365个城市。*
 
 ### 2\. 分析地区变量
 
@@ -162,9 +177,10 @@ summary(aqi %>%
 <!-- end list -->
 
 ``` r
-summary(aqi %>% 
+aqi %>% 
   group_by(地区) %>% 
-  count())
+  count() %>% 
+  summary()
 ```
 
     ##      地区                 n        
@@ -175,9 +191,27 @@ summary(aqi %>%
     ##                     3rd Qu.: 1.00  
     ##                     Max.   :27.00
 
-> *收集空气数据的地区有1264个。整个数据集有1453个观测，可以看出其中有些城市的数据收集地区有重复，重复数量有189个。*
+> *经聚合后，收集空气数据的地区有1264个。整个数据集有1453个观测，有些城市的数据收集地区有重复，重复数量有189个*
 
 ### 3\. 分析城市AQI变量
+
+  - 查看城市AQI的描述统计量
+
+<!-- end list -->
+
+``` r
+describe(aqi$城市AQI)
+```
+
+    ## aqi$城市AQI 
+    ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
+    ##     1453        0      129        1    85.53    42.64     39.0     44.0 
+    ##      .25      .50      .75      .90      .95 
+    ##     56.0     76.0    107.0    138.0    159.4 
+    ## 
+    ## lowest :  26  27  28  29  30, highest: 178 189 196 227 500
+
+> *城市AQI变量中有1453个值，没有缺失值，其中平均值是85.53，中位数是76，最小值是26，最大值是500*
 
   - 按城市分组，计算各城市的AQI平均值
 
@@ -205,7 +239,7 @@ avg_city_aqi
     ## 10 鞍山                 177
     ## # … with 355 more rows
 
-  - 统计城市AQI平均值的描述统计量
+  - 查看城市AQI平均值的描述统计量
 
 <!-- end list -->
 
@@ -221,7 +255,7 @@ summary(avg_city_aqi)
     ##                     3rd Qu.:102.00  
     ##                     Max.   :500.00
 
-> *365个城市的AQI指数平均值为83.19，最小值是26，最大值是500。*
+> *365个城市的AQI指数平均值为83.19，中位数是74，最小值是26，最大值是500。*
 
   - 城市AQI平均值的数值分布
 
@@ -250,11 +284,13 @@ avg_city_aqi %>%
 <!-- end list -->
 
 ``` r
+plot_theme = theme(plot.title = element_text(hjust = 0.5),
+              text = element_text(family = "MicrosoftYaHei"))
+
 ggplot(avg_city_aqi, aes(城市AQI平均值)) +
   geom_histogram(color="black", fill="red", binwidth = 30) +
   labs(title="城市AQI平均值分布图", x="AQI指数", y="频率") +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(family = "MicrosoftYaHei"))
+  plot_theme
 ```
 
 ![](aqi_files/figure-gfm/avg_city_aqi%20histogram-1.png)<!-- -->
@@ -275,16 +311,15 @@ ggplot(avg_city_aqi, aes(城市AQI平均值)) +
 
 ``` r
 avg_city_aqi %>% 
-  arrange(城市AQI平均值) %>%  # 按从小到大升序排列
+  arrange(城市AQI平均值) %>%  # 按从小到大排列
   head(10) %>%  # 输出AQI平均值最低的10个城市
   # 绘制条形图
   ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
   geom_bar(stat = "identity", fill = "green") +
-  labs(title = "城市AQI平均值最低的10个城市", x="城市", y="城市AQI平均值") +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(family = "MicrosoftYaHei")) +
-  geom_text(aes(label=城市AQI平均值), hjust=-0.2) +
-  coord_flip()
+  labs(title = "城市AQI平均值最低的10个城市", x="城市", y="城市AQI平均值") + # 标题
+  geom_text(aes(label=城市AQI平均值), hjust=-0.2) + # 数据标签
+  coord_flip() + # 图形转置
+  plot_theme
 ```
 
 ![](aqi_files/figure-gfm/avg_city_aqi%2010%20highest-1.png)<!-- -->
@@ -301,13 +336,111 @@ avg_city_aqi %>%
   ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
   geom_bar(stat = "identity", fill = "red") +
   labs(title = "城市AQI平均值最高的10个城市", x="城市", y="城市AQI平均值") +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(family = "MicrosoftYaHei")) +
   geom_text(aes(label=城市AQI平均值), hjust=-0.1) +
-  coord_flip()
+  coord_flip() +
+  plot_theme
 ```
 
 ![](aqi_files/figure-gfm/avg_city_aqi%2010%20lowest-1.png)<!-- -->
+
+### 4\. 分析PM2.5变量
+
+  - 查看PM2.5的描述统计量
+
+<!-- end list -->
+
+``` r
+describe(aqi$PM2.5)
+```
+
+    ## aqi$PM2.5 
+    ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
+    ##     1453        0      161        1    57.84    38.87       13       20 
+    ##      .25      .50      .75      .90      .95 
+    ##       32       50       79      107      125 
+    ## 
+    ## lowest :   1   2   3   4   5, highest: 193 212 272 283 476
+
+> *PM2.5变量有1453个值，没有缺失值，其中平均值是57.84，中位数是50，最小值是1，最大值是476*
+
+  - 按城市分组，计算各城市的PM2.5平均值
+
+<!-- end list -->
+
+``` r
+avg_city_pm2.5 <- aqi %>% 
+  group_by(城市) %>% 
+  summarise(城市PM2.5平均值 = mean(PM2.5))
+avg_city_pm2.5
+```
+
+    ## # A tibble: 365 x 2
+    ##    城市       城市PM2.5平均值
+    ##    <chr>                <dbl>
+    ##  1 阿坝州                2.67
+    ##  2 阿克苏地区          248.  
+    ##  3 阿拉善盟             23   
+    ##  4 阿勒泰地区           16.5 
+    ##  5 阿里地区              4   
+    ##  6 安康                 64   
+    ##  7 安庆                114.  
+    ##  8 安顺                 27   
+    ##  9 安阳                 75.2 
+    ## 10 鞍山                134   
+    ## # … with 355 more rows
+
+  - 查看城市PM2.5平均值的描述统计量
+
+<!-- end list -->
+
+``` r
+summary(avg_city_pm2.5)
+```
+
+    ##      城市           城市PM2.5平均值  
+    ##  Length:365         Min.   :  2.667  
+    ##  Class :character   1st Qu.: 30.500  
+    ##  Mode  :character   Median : 47.125  
+    ##                     Mean   : 54.943  
+    ##                     3rd Qu.: 72.250  
+    ##                     Max.   :374.000
+
+> *365个城市的PM2.5指数的平均值是54.94，中位数是47.13，最小值是2.67，最大值是374*
+
+  - 城市PM2.5平均值的数值分布
+
+<!-- end list -->
+
+``` r
+avg_city_pm2.5 %>% 
+  count(PM2.5指数 = cut_width(城市PM2.5平均值, 30))
+```
+
+    ## # A tibble: 9 x 2
+    ##   PM2.5指数     n
+    ##   <fct>     <int>
+    ## 1 [-15,15]     22
+    ## 2 (15,45]     152
+    ## 3 (45,75]     106
+    ## 4 (75,105]     57
+    ## 5 (105,135]    23
+    ## 6 (135,165]     2
+    ## 7 (165,195]     1
+    ## 8 (225,255]     1
+    ## 9 (345,375]     1
+
+  - 绘制城市PM2.5平均值的直方图
+
+<!-- end list -->
+
+``` r
+ggplot(avg_city_pm2.5, aes(城市PM2.5平均值)) +
+  geom_histogram(color="black", fill="red", binwidth = 30) +
+  labs(title="城市PM2.5平均值分布图", x="PM2.5指数", y="频率") +
+  plot_theme
+```
+
+![](aqi_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 # 参考资料
 
