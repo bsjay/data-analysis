@@ -29,6 +29,8 @@ output:
 library(tidyverse) # 数据分析包
 library(readxl) # 读取excel文件
 library(psych) # 查看描述统计量
+library(Hmisc)
+library(pastecs)
 library(knitr)
 library(magrittr)
 ```
@@ -78,7 +80,7 @@ head(aqi)
 # 5. 探索性数据分析
 ## 5.1 查看描述统计量
 ```{r warning=FALSE}
-describeBy(aqi)
+stat.desc(aqi)
 ```
 > *整个数据集有1453个观测（行），8个变量（列），这些变量分别是城市、地区、城市AQI、PM2.5、PM10、首要污染物、污染等级和地区AQI。*
 
@@ -92,7 +94,7 @@ aqi %>%
   count() %>% 
   summary()
 ```
-> *数据集总共有365个城市。*
+> *经聚合后，数据集有365个城市。*
 
 ### 2. 分析地区变量
 - 统计地区数量
@@ -102,9 +104,15 @@ aqi %>%
   count() %>% 
   summary()
 ```
-> *收集空气数据的地区有1264个。整个数据集有1453个观测，可以看出其中有些城市的数据收集地区有重复，重复数量有189个。*
+> *经聚合后，收集空气数据的地区有1264个。整个数据集有1453个观测，有些城市的数据收集地区有重复，重复数量有189个*
 
 ### 3. 分析城市AQI变量
+- 查看城市AQI的描述统计量
+```{r}
+describe(aqi$城市AQI)
+```
+> *城市AQI变量中有1453个值，没有缺失值，其中平均值是85.53，中位数是76，最小值是26，最大值是500*
+
 - 按城市分组，计算各城市的AQI平均值
 ```{r avg_city_aqi}
 avg_city_aqi <- aqi %>% 
@@ -113,11 +121,11 @@ avg_city_aqi <- aqi %>%
 avg_city_aqi
 ```
 
-- 统计城市AQI平均值的描述统计量
+- 查看城市AQI平均值的描述统计量
 ```{r}
 summary(avg_city_aqi)
 ```
-> *365个城市的AQI指数平均值为83.19，最小值是26，最大值是500。*
+> *365个城市的AQI指数平均值为83.19，中位数是74，最小值是26，最大值是500。*
 
 - 城市AQI平均值的数值分布
 ```{r}
@@ -127,11 +135,13 @@ avg_city_aqi %>%
 
 - 绘制城市AQI平均值的直方图
 ```{r avg_city_aqi histogram}
+plot_theme = theme(plot.title = element_text(hjust = 0.5),
+              text = element_text(family = "MicrosoftYaHei"))
+
 ggplot(avg_city_aqi, aes(城市AQI平均值)) +
   geom_histogram(color="black", fill="red", binwidth = 30) +
   labs(title="城市AQI平均值分布图", x="AQI指数", y="频率") +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(family = "MicrosoftYaHei"))
+  plot_theme
 ```
 
 > *有个49城市的AQI指数在15-45之间，等级为优，占比为13.4%；*
@@ -147,16 +157,15 @@ ggplot(avg_city_aqi, aes(城市AQI平均值)) +
 - 城市AQI平均值最低的10个城市
 ```{r avg_city_aqi 10 highest}
 avg_city_aqi %>% 
-  arrange(城市AQI平均值) %>%  # 按从小到大升序排列
+  arrange(城市AQI平均值) %>%  # 按从小到大排列
   head(10) %>%  # 输出AQI平均值最低的10个城市
   # 绘制条形图
   ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
   geom_bar(stat = "identity", fill = "green") +
-  labs(title = "城市AQI平均值最低的10个城市", x="城市", y="城市AQI平均值") +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(family = "MicrosoftYaHei")) +
-  geom_text(aes(label=城市AQI平均值), hjust=-0.2) +
-  coord_flip()
+  labs(title = "城市AQI平均值最低的10个城市", x="城市", y="城市AQI平均值") + # 标题
+  geom_text(aes(label=城市AQI平均值), hjust=-0.2) + # 数据标签
+  coord_flip() + # 图形转置
+  plot_theme
 ```
 
 - 城市AQI平均值最高的10个城市
@@ -168,16 +177,45 @@ avg_city_aqi %>%
   ggplot(aes(reorder(城市, 城市AQI平均值), 城市AQI平均值)) +
   geom_bar(stat = "identity", fill = "red") +
   labs(title = "城市AQI平均值最高的10个城市", x="城市", y="城市AQI平均值") +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(family = "MicrosoftYaHei")) +
   geom_text(aes(label=城市AQI平均值), hjust=-0.1) +
-  coord_flip()
+  coord_flip() +
+  plot_theme
 ```
 
+### 4. 分析PM2.5变量
+- 查看PM2.5的描述统计量
+```{r}
+describe(aqi$PM2.5)
+```
+> *PM2.5变量有1453个值，没有缺失值，其中平均值是57.84，中位数是50，最小值是1，最大值是476*
 
+- 按城市分组，计算各城市的PM2.5平均值
+```{r}
+avg_city_pm2.5 <- aqi %>% 
+  group_by(城市) %>% 
+  summarise(城市PM2.5平均值 = mean(PM2.5))
+avg_city_pm2.5
+```
 
+- 查看城市PM2.5平均值的描述统计量
+```{r}
+summary(avg_city_pm2.5)
+```
+> *365个城市的PM2.5指数的平均值是54.94，中位数是47.13，最小值是2.67，最大值是374*
 
+- 城市PM2.5平均值的数值分布
+```{r}
+avg_city_pm2.5 %>% 
+  count(PM2.5指数 = cut_width(城市PM2.5平均值, 30))
+```
 
+- 绘制城市PM2.5平均值的直方图
+```{r}
+ggplot(avg_city_pm2.5, aes(城市PM2.5平均值)) +
+  geom_histogram(color="black", fill="red", binwidth = 30) +
+  labs(title="城市PM2.5平均值分布图", x="PM2.5指数", y="频率") +
+  plot_theme
+```
 
 
 
