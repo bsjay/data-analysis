@@ -1752,9 +1752,10 @@ head(aqi)</code></pre>
 <ul>
 <li>统计城市数量</li>
 </ul>
-<pre class="r"><code>summary(aqi %&gt;% 
+<pre class="r"><code>aqi %&gt;% 
   group_by(城市) %&gt;% 
-  count())</code></pre>
+  count() %&gt;% 
+  summary()</code></pre>
 <pre><code>##      城市                 n         
 ##  Length:365         Min.   : 1.000  
 ##  Class :character   1st Qu.: 2.000  
@@ -1771,9 +1772,10 @@ head(aqi)</code></pre>
 <ul>
 <li>统计地区数量</li>
 </ul>
-<pre class="r"><code>summary(aqi %&gt;% 
+<pre class="r"><code>aqi %&gt;% 
   group_by(地区) %&gt;% 
-  count())</code></pre>
+  count() %&gt;% 
+  summary()</code></pre>
 <pre><code>##      地区                 n        
 ##  Length:1264        Min.   : 1.00  
 ##  Class :character   1st Qu.: 1.00  
