@@ -87,18 +87,20 @@ describeBy(aqi)
 ### 1. 分析城市变量
 - 统计城市数量
 ```{r city}
-summary(aqi %>% 
+aqi %>% 
   group_by(城市) %>% 
-  count())
+  count() %>% 
+  summary()
 ```
 > *数据集总共有365个城市。*
 
 ### 2. 分析地区变量
 - 统计地区数量
 ```{r area}
-summary(aqi %>% 
+aqi %>% 
   group_by(地区) %>% 
-  count())
+  count() %>% 
+  summary()
 ```
 > *收集空气数据的地区有1264个。整个数据集有1453个观测，可以看出其中有些城市的数据收集地区有重复，重复数量有189个。*
 
