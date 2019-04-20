@@ -57,12 +57,13 @@ aqi$首要污染物 <- str_replace_all(aqi$首要污染物, "[—]", "NA")
 - 转换变量的数据类型，以便进行更好地进行计算
 ```{r parse}
 aqi$城市AQI <- parse_double(aqi$城市AQI, na = "NA") # 转换为浮点类型
+
 aqi$PM2.5浓度 <- parse_number(aqi$PM2.5浓度, na = "NA") # 转换为数值类型
 aqi$PM10浓度 <- parse_number(aqi$PM10浓度, na = "NA")
-aqi$首要污染物 <- parse_factor(aqi$首要污染物, na = "NA")
 
+aqi$首要污染物 <- parse_factor(aqi$首要污染物, na = "NA") # 转换为因子
 level <- c("优", "良", "轻度污染", "中度污染", "严重污染")
-aqi$污染等级 <- parse_factor(aqi$污染等级, levels = level, na = "NA") # 转换为因子
+aqi$污染等级 <- parse_factor(aqi$污染等级, levels = level, na = "NA") 
 ```
 
 - 简化变量名
@@ -139,7 +140,7 @@ plot_theme = theme(plot.title = element_text(hjust = 0.5),
               text = element_text(family = "MicrosoftYaHei"))
 
 ggplot(avg_city_aqi, aes(城市AQI平均值)) +
-  geom_histogram(color="black", fill="red", binwidth = 30) +
+  geom_histogram(color="black", fill="blue", binwidth = 30) +
   labs(title="城市AQI平均值分布图", x="AQI指数", y="频率") +
   plot_theme
 ```
@@ -204,7 +205,7 @@ avg_city_pm2.5 %>%
 - 绘制城市PM2.5平均值的直方图
 ```{r}
 ggplot(avg_city_pm2.5, aes(城市PM2.5平均值)) +
-  geom_histogram(color="black", fill="red", binwidth = 30) +
+  geom_histogram(color="black", fill="blue", binwidth = 30) +
   labs(title="城市PM2.5平均值分布图", x="PM2.5指数", y="频率") +
   plot_theme
 ```
@@ -267,10 +268,11 @@ avg_city_pm10 %>%
 - 绘制城市PM10平均值的直方图
 ```{r}
 ggplot(avg_city_pm10, aes(城市PM10平均值)) +
-  geom_histogram(color="black", fill="red", binwidth = 30, na.rm = TRUE) +
+  geom_histogram(color="black", fill="blue", binwidth = 30, na.rm = TRUE) +
   labs(title = "城市PM10平均值分布图", x="PM10指数", y="频率") +
   plot_theme
 ```
+
 > *有307个城市的PM10指数在0-195之间，占总体的96.2%，分布与城市AQI指数和PM2.5指数基本相同，显示三者呈现正相关关系*
 
 - 城市PM10平均值最低的10个城市
@@ -299,8 +301,22 @@ avg_city_pm10 %>%
   plot_theme
 ```
 
+### 6.分析首要污染物变量
+- 查看首要污染物的描述统计量
+```{r}
+summary(aqi$首要污染物)
+```
 
+- 绘制首要污染物的条形图
+```{r}
+ggplot(aqi, aes(aqi$首要污染物)) +
+  geom_bar(color="black", fill="blue") +
+  labs(title="首要污染物分布", x="首要污染物", y="频率") +
+  geom_text(aes(label=as.character(..count..)), stat="count", vjust=-0.3) +
+  plot_theme
+```
 
+> *首要污染物变量共有1453个值，其中PM2.5有752个值，PM10有436个值，臭氧（O3）有8个值，还有257个缺失值，这些缺失值所代表的都是空气质量等级为优的城市*
 
 
 
