@@ -71,12 +71,13 @@ aqi$首要污染物 <- str_replace_all(aqi$首要污染物, "[—]", "NA")
 
 ``` r
 aqi$城市AQI <- parse_double(aqi$城市AQI, na = "NA") # 转换为浮点类型
+
 aqi$PM2.5浓度 <- parse_number(aqi$PM2.5浓度, na = "NA") # 转换为数值类型
 aqi$PM10浓度 <- parse_number(aqi$PM10浓度, na = "NA")
-aqi$首要污染物 <- parse_factor(aqi$首要污染物, na = "NA")
 
+aqi$首要污染物 <- parse_factor(aqi$首要污染物, na = "NA") # 转换为因子
 level <- c("优", "良", "轻度污染", "中度污染", "严重污染")
-aqi$污染等级 <- parse_factor(aqi$污染等级, levels = level, na = "NA") # 转换为因子
+aqi$污染等级 <- parse_factor(aqi$污染等级, levels = level, na = "NA") 
 ```
 
   - 简化变量名
@@ -288,22 +289,14 @@ plot_theme = theme(plot.title = element_text(hjust = 0.5),
               text = element_text(family = "MicrosoftYaHei"))
 
 ggplot(avg_city_aqi, aes(城市AQI平均值)) +
-  geom_histogram(color="black", fill="red", binwidth = 30) +
+  geom_histogram(color="black", fill="blue", binwidth = 30) +
   labs(title="城市AQI平均值分布图", x="AQI指数", y="频率") +
   plot_theme
 ```
 
 ![](aqi_files/figure-gfm/avg_city_aqi%20histogram-1.png)<!-- -->
 
-> *有个49城市的AQI指数在15-45之间，等级为优，占比为13.4%；*
-
-> *有232个城市的AQI指数在45-105之间，等级为良，占比为63.6%；*
-
-> *有80个城市的AQI指数在105-195之间，等级为轻度污染，占比为21.9%；*
-
-> *有2个城市的AQI指数在195-255之间，等级为中度污染，占比为0.5%；*
-
-> *有2个城市的AQI指数在495-525之间，等级为重度污染，占比为0.5%。*
+> *有361个城市的AQI指数在15-195之间，占总体的98.9%，空气质量等级在优到轻度污染之间*
 
   - 城市AQI平均值最低的10个城市
 
@@ -435,12 +428,225 @@ avg_city_pm2.5 %>%
 
 ``` r
 ggplot(avg_city_pm2.5, aes(城市PM2.5平均值)) +
-  geom_histogram(color="black", fill="red", binwidth = 30) +
+  geom_histogram(color="black", fill="blue", binwidth = 30) +
   labs(title="城市PM2.5平均值分布图", x="PM2.5指数", y="频率") +
   plot_theme
 ```
 
 ![](aqi_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+> *有360个城市的PM2.5指数在0-135之间，占总体的98.6%，分布与城市AQI指数基本相同，显示两者呈正相关关系*
+
+  - 城市PM2.5平均值最低的10个城市
+
+<!-- end list -->
+
+``` r
+avg_city_pm2.5 %>% 
+  arrange(城市PM2.5平均值) %>% 
+  head(10) %>% 
+  ggplot(aes(reorder(城市, 城市PM2.5平均值), 城市PM2.5平均值)) +
+  geom_bar(stat = "identity", fill="green") +
+  labs(title = "城市PM2.5平均值最低的10个城市", x="城市", y="城市PM2.5平均值") +
+  geom_text(aes(label=城市PM2.5平均值), hjust=-0.2) +
+  coord_flip() +
+  plot_theme
+```
+
+![](aqi_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+  - 城市PM2.5平均值最高的10个城市
+
+<!-- end list -->
+
+``` r
+avg_city_pm2.5 %>% 
+  arrange(desc(城市PM2.5平均值)) %>% 
+  head(10) %>% 
+  ggplot(aes(reorder(城市, 城市PM2.5平均值), 城市PM2.5平均值)) +
+  geom_bar(stat = "identity", fill="red") +
+  labs(title = "城市PM2.5平均值最高的10个城市", x="城市", y="城市PM2.5平均值") +
+  geom_text(aes(label=城市PM2.5平均值), hjust=0) +
+  coord_flip() +
+  plot_theme
+```
+
+![](aqi_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+### 5.分析PM10变量
+
+  - 查看PM10的描述统计量
+
+<!-- end list -->
+
+``` r
+describe(aqi$PM10)
+```
+
+    ## aqi$PM10 
+    ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
+    ##     1389       64      229        1    97.95    61.07     30.0     38.0 
+    ##      .25      .50      .75      .90      .95 
+    ##     57.0     87.0    125.0    169.2    197.0 
+    ## 
+    ## lowest :    1    5    7    8    9, highest:  386  714  801  955 1135
+
+> *PM10变量有1389个值，有64个缺失值，其中平均值是97.95，中位数是87，最小值是1，最大值是1135*
+
+  - 按城市分组，计算各城市的PM10平均值
+
+<!-- end list -->
+
+``` r
+avg_city_pm10 <- aqi %>% 
+  group_by(城市) %>% 
+  summarise(城市PM10平均值 = mean(PM10))
+avg_city_pm10
+```
+
+    ## # A tibble: 365 x 2
+    ##    城市       城市PM10平均值
+    ##    <chr>               <dbl>
+    ##  1 阿坝州               NA  
+    ##  2 阿克苏地区         1045  
+    ##  3 阿拉善盟             37.3
+    ##  4 阿勒泰地区           53  
+    ##  5 阿里地区              8.5
+    ##  6 安康                 99.3
+    ##  7 安庆                143  
+    ##  8 安顺                 40.8
+    ##  9 安阳                 96.4
+    ## 10 鞍山                235  
+    ## # … with 355 more rows
+
+  - 查看城市PM10平均值的描述统计量
+
+<!-- end list -->
+
+``` r
+summary(avg_city_pm10)
+```
+
+    ##      城市           城市PM10平均值   
+    ##  Length:365         Min.   :   8.50  
+    ##  Class :character   1st Qu.:  59.00  
+    ##  Mode  :character   Median :  85.00  
+    ##                     Mean   :  98.81  
+    ##                     3rd Qu.: 123.45  
+    ##                     Max.   :1045.00  
+    ##                     NA's   :46
+
+> *365个城市里，有46个城市没有数据，余下的319个城市里，PM10指数的平均值是98.81，中位数是85，最小值是8.5，最大值是1045*
+
+  - 城市PM10平均值的数值分布
+
+<!-- end list -->
+
+``` r
+avg_city_pm10 %>% 
+  count(PM10指数 = cut_width(城市PM10平均值, 30))
+```
+
+    ## Warning: Factor `PM10指数` contains implicit NA, consider using
+    ## `forcats::fct_explicit_na`
+
+    ## # A tibble: 14 x 2
+    ##    PM10指数                n
+    ##    <fct>               <int>
+    ##  1 [-15,15]                1
+    ##  2 (15,45]                38
+    ##  3 (45,75]                96
+    ##  4 (75,105]               74
+    ##  5 (105,135]              48
+    ##  6 (135,165]              28
+    ##  7 (165,195]              22
+    ##  8 (195,225]               5
+    ##  9 (225,255]               2
+    ## 10 (255,285]               1
+    ## 11 (285,315]               2
+    ## 12 (735,765]               1
+    ## 13 (1.04e+03,1.06e+03]     1
+    ## 14 <NA>                   46
+
+  - 绘制城市PM10平均值的直方图
+
+<!-- end list -->
+
+``` r
+ggplot(avg_city_pm10, aes(城市PM10平均值)) +
+  geom_histogram(color="black", fill="blue", binwidth = 30, na.rm = TRUE) +
+  labs(title = "城市PM10平均值分布图", x="PM10指数", y="频率") +
+  plot_theme
+```
+
+![](aqi_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+> *有307个城市的PM10指数在0-195之间，占总体的96.2%，分布与城市AQI指数和PM2.5指数基本相同，显示三者呈现正相关关系*
+
+  - 城市PM10平均值最低的10个城市
+
+<!-- end list -->
+
+``` r
+avg_city_pm10 %>% 
+  arrange(城市PM10平均值) %>% 
+  head(10) %>% 
+  ggplot(aes(reorder(城市, 城市PM10平均值), 城市PM10平均值)) +
+  geom_bar(stat = "identity", fill="green") +
+  labs(title = "城市PM10平均值最低的10个城市", x="城市", y="城市PM10平均值") +
+  geom_text(aes(label=城市PM10平均值), hjust=0.3) +
+  coord_flip() +
+  plot_theme
+```
+
+![](aqi_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+  - 城市PM10平均值最高的10个城市
+
+<!-- end list -->
+
+``` r
+avg_city_pm10 %>% 
+  arrange(desc(城市PM10平均值)) %>% 
+  head(10) %>% 
+  ggplot(aes(reorder(城市, 城市PM10平均值), 城市PM10平均值)) +
+  geom_bar(stat = "identity", fill="red") +
+  labs(title = "城市PM10平均值最高的10个城市", x="城市", y="城市PM10平均值") +
+  geom_text(aes(label=城市PM10平均值), hjust=0.3) +
+  coord_flip() +
+  plot_theme
+```
+
+![](aqi_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+### 6.分析首要污染物变量
+
+  - 查看首要污染物的描述统计量
+
+<!-- end list -->
+
+``` r
+summary(aqi$首要污染物)
+```
+
+    ## PM2.5  <NA>  PM10    O3 
+    ##   752   257   436     8
+
+  - 绘制首要污染物的条形图
+
+<!-- end list -->
+
+``` r
+ggplot(aqi, aes(aqi$首要污染物)) +
+  geom_bar(color="black", fill="blue") +
+  labs(title="首要污染物分布", x="首要污染物", y="频率") +
+  geom_text(aes(label=as.character(..count..)), stat="count", vjust=-0.3) +
+  plot_theme
+```
+
+![](aqi_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+> *首要污染物变量共有1453个值，其中PM2.5有752个值，PM10有436个值，臭氧（O3）有8个值，还有257个缺失值，这些缺失值所代表的都是空气质量等级为优的城市*
 
 # 参考资料
 
