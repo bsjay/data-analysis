@@ -208,6 +208,7 @@ ggplot(avg_city_pm2.5, aes(城市PM2.5平均值)) +
   labs(title="城市PM2.5平均值分布图", x="PM2.5指数", y="频率") +
   plot_theme
 ```
+
 > *有360个城市的PM2.5指数在0-135之间，占总体的98.6%，分布与城市AQI指数基本相同，显示两者呈正相关关系*
 
 - 城市PM2.5平均值最低的10个城市
@@ -231,10 +232,74 @@ avg_city_pm2.5 %>%
   ggplot(aes(reorder(城市, 城市PM2.5平均值), 城市PM2.5平均值)) +
   geom_bar(stat = "identity", fill="red") +
   labs(title = "城市PM2.5平均值最高的10个城市", x="城市", y="城市PM2.5平均值") +
-  geom_text(aes(label=城市PM2.5平均值), hjust=-0.1) +
+  geom_text(aes(label=城市PM2.5平均值), hjust=0) +
   coord_flip() +
   plot_theme
 ```
+
+### 5.分析PM10变量
+- 查看PM10的描述统计量
+```{r}
+describe(aqi$PM10)
+```
+> *PM10变量有1389个值，有64个缺失值，其中平均值是97.95，中位数是87，最小值是1，最大值是1135*
+
+- 按城市分组，计算各城市的PM10平均值
+```{r}
+avg_city_pm10 <- aqi %>% 
+  group_by(城市) %>% 
+  summarise(城市PM10平均值 = mean(PM10))
+avg_city_pm10
+```
+
+- 查看城市PM10平均值的描述统计量
+```{r}
+summary(avg_city_pm10)
+```
+> *365个城市里，有46个城市没有数据，余下的319个城市里，PM10指数的平均值是98.81，中位数是85，最小值是8.5，最大值是1045*
+
+- 城市PM10平均值的数值分布
+```{r}
+avg_city_pm10 %>% 
+  count(PM10指数 = cut_width(城市PM10平均值, 30))
+```
+
+- 绘制城市PM10平均值的直方图
+```{r}
+ggplot(avg_city_pm10, aes(城市PM10平均值)) +
+  geom_histogram(color="black", fill="red", binwidth = 30, na.rm = TRUE) +
+  labs(title = "城市PM10平均值分布图", x="PM10指数", y="频率") +
+  plot_theme
+```
+> *有307个城市的PM10指数在0-195之间，占总体的96.2%，分布与城市AQI指数和PM2.5指数基本相同，显示三者呈现正相关关系*
+
+- 城市PM10平均值最低的10个城市
+```{r}
+avg_city_pm10 %>% 
+  arrange(城市PM10平均值) %>% 
+  head(10) %>% 
+  ggplot(aes(reorder(城市, 城市PM10平均值), 城市PM10平均值)) +
+  geom_bar(stat = "identity", fill="green") +
+  labs(title = "城市PM10平均值最低的10个城市", x="城市", y="城市PM10平均值") +
+  geom_text(aes(label=城市PM10平均值), hjust=0.3) +
+  coord_flip() +
+  plot_theme
+```
+
+- 城市PM10平均值最高的10个城市
+```{r}
+avg_city_pm10 %>% 
+  arrange(desc(城市PM10平均值)) %>% 
+  head(10) %>% 
+  ggplot(aes(reorder(城市, 城市PM10平均值), 城市PM10平均值)) +
+  geom_bar(stat = "identity", fill="red") +
+  labs(title = "城市PM10平均值最高的10个城市", x="城市", y="城市PM10平均值") +
+  geom_text(aes(label=城市PM10平均值), hjust=0.3) +
+  coord_flip() +
+  plot_theme
+```
+
+
 
 
 
