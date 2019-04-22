@@ -326,9 +326,6 @@ summary(aqi$污染等级)
 
 - 绘制污染等级的条形图
 ```{r}
-aqi %>% 
-  group_by(污染等级) %>% 
-  count(污染等级)
 ggplot(aqi, aes(aqi$污染等级)) +
   geom_bar(color="black", fill="blue") +
   labs(title = "污染等级分布", x="污染等级", y="计数") +
