@@ -639,14 +639,59 @@ summary(aqi$首要污染物)
 ``` r
 ggplot(aqi, aes(aqi$首要污染物)) +
   geom_bar(color="black", fill="blue") +
-  labs(title="首要污染物分布", x="首要污染物", y="频率") +
+  labs(title="首要污染物分布", x="首要污染物", y="计数") +
   geom_text(aes(label=as.character(..count..)), stat="count", vjust=-0.3) +
   plot_theme
 ```
 
 ![](aqi_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
-> *首要污染物变量共有1453个值，其中PM2.5有752个值，PM10有436个值，臭氧（O3）有8个值，还有257个缺失值，这些缺失值所代表的都是空气质量等级为优的城市*
+> *在首要污染物中，有752个地区是PM2.5，有436个地区是PM10，有8个地区是臭氧（O3），有257个缺失值(NA)，这些缺失值所代表的都是污染等级为优的地区*
+
+### 7\. 分析污染等级变量
+
+  - 查看污染等级的描述统计量
+
+<!-- end list -->
+
+``` r
+summary(aqi$污染等级)
+```
+
+    ##       优       良 轻度污染 中度污染 严重污染 
+    ##      229      786      417       17        4
+
+  - 绘制污染等级的条形图
+
+<!-- end list -->
+
+``` r
+aqi %>% 
+  group_by(污染等级) %>% 
+  count(污染等级)
+```
+
+    ## # A tibble: 5 x 2
+    ## # Groups:   污染等级 [5]
+    ##   污染等级     n
+    ##   <fct>    <int>
+    ## 1 优         229
+    ## 2 良         786
+    ## 3 轻度污染   417
+    ## 4 中度污染    17
+    ## 5 严重污染     4
+
+``` r
+ggplot(aqi, aes(aqi$污染等级)) +
+  geom_bar(color="black", fill="blue") +
+  labs(title = "污染等级分布", x="污染等级", y="计数") +
+  geom_text(aes(label = as.character(..count..)), stat = "count", vjust=-0.3) +
+  plot_theme
+```
+
+![](aqi_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+> *在污染等级中，有229个地区为优，有786个地区为良，有417个地区为轻度污染，有17个地区为中度污染，有4个地区为严重污染*
 
 # 参考资料
 
