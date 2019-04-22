@@ -666,22 +666,6 @@ summary(aqi$污染等级)
 <!-- end list -->
 
 ``` r
-aqi %>% 
-  group_by(污染等级) %>% 
-  count(污染等级)
-```
-
-    ## # A tibble: 5 x 2
-    ## # Groups:   污染等级 [5]
-    ##   污染等级     n
-    ##   <fct>    <int>
-    ## 1 优         229
-    ## 2 良         786
-    ## 3 轻度污染   417
-    ## 4 中度污染    17
-    ## 5 严重污染     4
-
-``` r
 ggplot(aqi, aes(aqi$污染等级)) +
   geom_bar(color="black", fill="blue") +
   labs(title = "污染等级分布", x="污染等级", y="计数") +
