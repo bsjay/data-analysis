@@ -2104,14 +2104,6 @@ avg_city_pm10</code></pre>
 <ul>
 <li>绘制污染等级的条形图</li>
 </ul>
-<pre class="r"><code>aqi %&gt;% 
-  group_by(污染等级) %&gt;% 
-  count(污染等级)</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["污染等级"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"优","2":"229"},{"1":"良","2":"786"},{"1":"轻度污染","2":"417"},{"1":"中度污染","2":"17"},{"1":"严重污染","2":"4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
 <pre class="r"><code>ggplot(aqi, aes(aqi$污染等级)) +
   geom_bar(color=&quot;black&quot;, fill=&quot;blue&quot;) +
   labs(title = &quot;污染等级分布&quot;, x=&quot;污染等级&quot;, y=&quot;计数&quot;) +
