@@ -473,7 +473,7 @@ avg_city_pm2.5 %>%
 
 ![](aqi_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
-### 5.分析PM10变量
+### 5\. 分析PM10变量
 
   - 查看PM10的描述统计量
 
@@ -619,7 +619,7 @@ avg_city_pm10 %>%
 
 ![](aqi_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
-### 6.分析首要污染物变量
+### 6\. 分析首要污染物变量
 
   - 查看首要污染物的描述统计量
 
@@ -676,6 +676,8 @@ ggplot(aqi, aes(aqi$污染等级)) +
 ![](aqi_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 > *在污染等级中，有229个地区为优，有786个地区为良，有417个地区为轻度污染，有17个地区为中度污染，有4个地区为严重污染*
+
+## 5.2 多因子探索性数据分析
 
 # 参考资料
 
