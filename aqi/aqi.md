@@ -110,39 +110,25 @@ head(aqi)
 ## 5.1 查看描述统计量
 
 ``` r
-stat.desc(aqi)
+summary(aqi)
 ```
 
-    ##          城市 地区      城市AQI        PM2.5         PM10 首要污染物
-    ## nbr.val    NA   NA 1.453000e+03 1.453000e+03 1.389000e+03         NA
-    ## nbr.null   NA   NA 0.000000e+00 0.000000e+00 0.000000e+00         NA
-    ## nbr.na     NA   NA 0.000000e+00 0.000000e+00 6.400000e+01         NA
-    ## min        NA   NA 2.600000e+01 1.000000e+00 1.000000e+00         NA
-    ## max        NA   NA 5.000000e+02 4.760000e+02 1.135000e+03         NA
-    ## range      NA   NA 4.740000e+02 4.750000e+02 1.134000e+03         NA
-    ## sum        NA   NA 1.242730e+05 8.403500e+04 1.360510e+05         NA
-    ## median     NA   NA 7.600000e+01 5.000000e+01 8.700000e+01         NA
-    ## mean       NA   NA 8.552856e+01 5.783551e+01 9.794888e+01         NA
-    ## SE.mean    NA   NA 1.119277e+00 9.671441e-01 1.829588e+00         NA
-    ## CI.mean    NA   NA 2.195573e+00 1.897149e+00 3.589056e+00         NA
-    ## var        NA   NA 1.820291e+03 1.359089e+03 4.649527e+03         NA
-    ## std.dev    NA   NA 4.266486e+01 3.686583e+01 6.818744e+01         NA
-    ## coef.var   NA   NA 4.988376e-01 6.374255e-01 6.961533e-01         NA
-    ##          污染等级      地区AQI
-    ## nbr.val        NA 1.453000e+03
-    ## nbr.null       NA 0.000000e+00
-    ## nbr.na         NA 0.000000e+00
-    ## min            NA 1.100000e+01
-    ## max            NA 5.000000e+02
-    ## range          NA 4.890000e+02
-    ## sum            NA 1.248190e+05
-    ## median         NA 7.500000e+01
-    ## mean           NA 8.590434e+01
-    ## SE.mean        NA 1.186049e+00
-    ## CI.mean        NA 2.326552e+00
-    ## var            NA 2.043952e+03
-    ## std.dev        NA 4.521008e+01
-    ## coef.var       NA 5.262841e-01
+    ##      城市               地区              城市AQI           PM2.5       
+    ##  Length:1453        Length:1453        Min.   : 26.00   Min.   :  1.00  
+    ##  Class :character   Class :character   1st Qu.: 56.00   1st Qu.: 32.00  
+    ##  Mode  :character   Mode  :character   Median : 76.00   Median : 50.00  
+    ##                                        Mean   : 85.53   Mean   : 57.84  
+    ##                                        3rd Qu.:107.00   3rd Qu.: 79.00  
+    ##                                        Max.   :500.00   Max.   :476.00  
+    ##                                                                         
+    ##       PM10         首要污染物      污染等级      地区AQI     
+    ##  Min.   :   1.00   PM2.5:752   优      :229   Min.   : 11.0  
+    ##  1st Qu.:  57.00   NA   :257   良      :786   1st Qu.: 56.0  
+    ##  Median :  87.00   PM10 :436   轻度污染:417   Median : 75.0  
+    ##  Mean   :  97.95   O3   :  8   中度污染: 17   Mean   : 85.9  
+    ##  3rd Qu.: 125.00               严重污染:  4   3rd Qu.:108.0  
+    ##  Max.   :1135.00                              Max.   :500.0  
+    ##  NA's   :64
 
 > *整个数据集有1453个观测（行），8个变量（列），这些变量分别是城市、地区、城市AQI、PM2.5、PM10、首要污染物、污染等级和地区AQI。*
 
@@ -677,7 +663,7 @@ ggplot(aqi, aes(aqi$污染等级)) +
 
 > *在污染等级中，有229个地区为优，有786个地区为良，有417个地区为轻度污染，有17个地区为中度污染，有4个地区为严重污染*
 
-## 5.2 多因子探索性数据分析
+## 5.3 多因子探索性数据分析
 
 # 参考资料
 
